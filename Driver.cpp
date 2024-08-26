@@ -1,148 +1,79 @@
-#include "Timer.h"
+//LOOK!! ---------------------put your comment block here with title, author, date, & purpose
+
+
 #include <iostream>
-#include <fstream>
+#include "InvItem.h"
+#include "DynStack.h"
 using namespace std;
-
-struct wordCount{
-	string word;
-	int count;
-};
-
-void insertionSort(wordCount *wordArray, int numWords);
-void bubbleSortReverse(wordCount *wordArray, int numWords);
-void quicksort(wordCount *wordArray, int low, int high);
-int partition(wordCount *wordArray, int left, int right);
 
 int main()
 {
-	wordCount* wordArray = new wordCount[150000];
-	int numWords = 0;
-	string temp;
-	int num;
+	//LOOK!!  -------------------create your InventoryItem stack on the line below and name it "stack"
+
+	DynamicStack <InvItem> stack;
 	
-	ofstream outfile;
-	ifstream infile;
+	//LOOK!! ---------------------create an inventory item object and name it "item"
 
-	time_t start, end;
-	char filename[50];
-	cout << "\nWhich file are you opening?\n";
-	cin >> filename;
-	infile.open(filename);
+	InvItem item;
 	
-	if(!infile)
+
+	int choice;						// Menu choice
+	long serial;					// Serial number
+	string mDate;					// Manufacture date
+
+	do
 	{
-		cout << "\nSorry, I couldn't find that file.\n";
-		return 1;
-	}
+		// Display the menu.
+		cout << "\n------ Inventory Menu --------\n\n";
+		cout << "1.  Enter a part into the inventory.\n";
+		cout << "2.  Take a part from the inventory.\n";
+		cout << "3.  Quit.\n\n";
+		cout << "Please make a choice (1, 2, or 3):  ";
+		cin >> choice;
 
-	while(getline(infile, temp) && numWords != 150000)
-	{
-		wordArray[numWords].word = temp;
-		infile >> num;
-		infile.ignore();
-		wordArray[numWords].count = num;
-		numWords++;
-	}
-	cout << "you've read in " << numWords << " words.\n";
+		// Validate choice
+		while (choice < 1 || choice > 3)
+		{
+			cout << "Please enter 1, 2, or 3: ";
+			cin >> choice;
+		}
 
-	//sort the songs using insertion sort and print them out to the text file sortFileInsertion.txt
-	start = getTime(); //Starts timer.   
+		// Act on the user's choice.
+		switch(choice)
+		{
 
-	//LOOK!!!!  CALL THE INSERTION SORT ALGORITHM HERE
+		case 1:
+			// Enter a part into inventory.
+			cout << "\nYou have chosen to add an item to the inventory bin.\n\n";
+			cout << "Enter the item's serial number: ";
+			cin >> serial;
+			item.setSerialNum(serial);
+			cout << "Enter the item's manufacture date: ";
+			cin >> mDate;
+			item.setManufactDate(mDate);
+			stack.push(item);
+			break;
 
-	end = getTime(); //Ends timer.
-	outfile.open("sortFileInsertion.txt");
-	cout << "\nInsertion sort: " << totalTime(start, end) << " seconds\n\n";
-	for(int x=0; x<numWords; x++)
-	{
-		outfile << wordArray[x].word << " : " << wordArray[x].count << endl;
-	}
-	outfile.close();
+		case 2:
+			// Take a part out of inventory.
+			cout << "\nYou have chosen to remove an item from the inventory bin.\n\n";
+			if (stack.isEmpty())
+				cout << "No parts to remove.\n";
+			else
+			{
+				stack.pop(item);
+				cout << "\nThe part you removed was:\n";
+				cout << "\tSerial number: " << item.getSerialNum() << endl;
+				cout << "\tManufacture date: " << item.getManufactDate() << endl;
+				cout << endl;
+			}
+			break;
 
-	//sort the songs in reverse order using bubble sort & print them out to the text file sortFileReverseBubble.txt
-	start = getTime(); //Starts timer. 
+		case 3:
+			cout << "\nGoodbye!\n\n";
+			break;
+		}
+	} while (choice  != 3);
 
-	//LOOK!!!!  CALL THE REVERSE BUBBLE SORT ALGORITHM HERE
-
-	end = getTime(); //Ends timer.
-	outfile.open("sortFileReverseBubble.txt");
-	cout << "\nReverse bubble sort: " << totalTime(start, end) << " seconds\n\n";
-	for(int x=0; x<numWords; x++)
-	{
-		outfile << wordArray[x].word << " : " << wordArray[x].count << endl;
-	}
-	outfile.close();
-
-	//sort the songs with quick sort & print them out to sortFileQuick.txt
-	start = getTime(); //Starts timer. 
-	
-	//LOOK!!!!  CALL THE QUICKSORT ALGORITHM HERE
-
-	end = getTime(); //Ends timer.
-	cout << "\nQuicksort: " << totalTime(start, end) << " seconds\n\n";
-	outfile.open("sortFileQuick.txt");
-	for(int x=0; x<numWords; x++)
-	{
-		outfile << wordArray[x].word << " : " << wordArray[x].count << endl;
-	}
-	outfile.close();
-	
-	delete [] wordArray;
 	return 0;
-}
-
-//LOOK!  WRITE YOUR INSERTION SORT FUNCTION HERE
-void insertionSort(wordCount *wordArray, int numWords) {
-	int temp;
-
-	for(int i =1; i < numWords; i++){
-		wordCount temp = wordArray[i];
-		int j = i -1;
-		while (j >= 0 && wordArray[j].count > temp.count) {
-			wordArray[j+1] = wordArray[j];
-			j--;
-		}
-		wordArray[j+1] = temp;
-	}
-}
-
-
-//LOOK!  WRITE YOUR REVERSE BUBBLE SORT FUNCTION HERE
-
-void bubbleSortReverse(wordCount *wordArray, int numWords) {
-	for (int i = 0; i < numWords -1; i++){
-		bool swapped = false;
-		for (int j = 0; j < numWords -1; i++){
-			if (wordArray[j].count < wordArray[j+1].count);
-			swapped = true;
-		}
-		if(!swapped)
-		break;
-	}
-}
-
-//LOOK!  WRITE YOUR RECURSIVE QUICK SORT FUNCTION HERE
-
-void quicksort(wordCount *wordArray, int low, int high){
-	if (low < high) {
-		int pivot = partition(wordArray, low, high);
-		quicksort(wordArray, low, pivot-1);
-		quicksort(wordArray, pivot + 1, high);
-	}
-}
-
-//LOOK!  WRITE YOUR PARTITION FUNCTION HERE
-
-int partition(wordCount *wordArray, int left, int right) {
-	int pivot = wordArray[right].count;
-	int i = left - 1;
-
-	for (int j = left; j < right; j++) {
-		if (wordArray[j].count < pivot) {
-			i++;
-			swap(wordArray[i], wordArray[j]);
-		}
-	}
-	swap(wordArray[i + 1], wordArray[right]);
-	return i+1;
 }
